@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>डिस्प्ले वीडियो कैलकुलेटर</title>
+  <title>डिस्प्ले वीडियो और ऑडियो कैलकुलेटर</title>
   <style>
     body {
       background-color: #121212;
@@ -24,7 +24,7 @@
       text-align: center;
     }
 
-    /* 1. डिस्प्ले फ्रेम जहाँ वीडियो और नंबर दोनों रहेंगे */
+    /* 1. डिस्प्ले फ्रेम */
     .display-container {
       position: relative;
       width: 100%;
@@ -36,7 +36,7 @@
       border: 2px solid #333;
     }
 
-    /* 2. वीडियो का स्टाइल (ऑटोमैटिक सेंटर और क्रॉप) */
+    /* वीडियो का स्टाइल */
     #displayVideo {
       position: absolute;
       top: 0;
@@ -46,6 +46,106 @@
       object-fit: cover;
       display: none;
       z-index: 1;
+    }
+
+    /* ऑडिओ एनीमेशन लेयर */
+    #audioAnimationLayer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: none;
+      z-index: 2;
+      background: radial-gradient(circle, rgba(233,30,99,0.35) 0%, rgba(0,0,0,0.9) 80%);
+      overflow: hidden;
+    }
+
+    /* बाएँ से दाएँ मैजिक स्वाइप इफ़ेक्ट */
+    .magic-sweep {
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 60%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.7), rgba(255, 105, 180, 0.9), transparent);
+      transform: skewX(-20deg);
+      z-index: 3;
+    }
+
+    @keyframes magicSweepAnim {
+      0% { left: -100%; }
+      100% { left: 150%; }
+    }
+
+    .magic-sweep-active {
+      animation: magicSweepAnim 1.2s ease-in-out forwards;
+    }
+
+    /* ग्लोइंग लव पल्स एनीमेशन */
+    .glowing-love {
+      position: absolute;
+      top: 50%;
+      left: 20%;
+      transform: translate(-50%, -50%);
+      font-size: 28px;
+      color: #ff2a85;
+      text-shadow: 0 0 10px #ff2a85, 0 0 20px #ff2a85, 0 0 30px #ff2a85;
+      animation: heartPulse 1s infinite alternate ease-in-out;
+      z-index: 4;
+    }
+
+    @keyframes heartPulse {
+      0% { transform: translate(-50%, -50%) scale(0.85); text-shadow: 0 0 5px #ff2a85; }
+      100% { transform: translate(-50%, -50%) scale(1.2); text-shadow: 0 0 15px #ff2a85, 0 0 25px #ff0055; }
+    }
+
+    /* तैरते हुए फ्लोटिंग लव पार्टिकल्स */
+    .floating-heart {
+      position: absolute;
+      color: #ff69b4;
+      font-size: 14px;
+      opacity: 0.8;
+      pointer-events: none;
+      animation: floatUp 2s linear infinite;
+      z-index: 4;
+    }
+
+    @keyframes floatUp {
+      0% { transform: translateY(80px) scale(0.5); opacity: 1; }
+      100% { transform: translateY(-20px) scale(1.2); opacity: 0; }
+    }
+
+    /* म्यूज़िक साउंड वेव्स (इक्वलाइज़र) */
+    .sound-waves {
+      position: absolute;
+      bottom: 8px;
+      left: 12px;
+      display: flex;
+      gap: 3px;
+      align-items: flex-end;
+      height: 20px;
+      z-index: 4;
+    }
+
+    .wave-bar {
+      width: 3px;
+      height: 100%;
+      background: #ff2a85;
+      box-shadow: 0 0 6px #ff2a85;
+      border-radius: 2px;
+      animation: waveDance 0.6s infinite alternate ease-in-out;
+    }
+
+    .wave-bar:nth-child(1) { animation-delay: 0.1s; }
+    .wave-bar:nth-child(2) { animation-delay: 0.3s; }
+    .wave-bar:nth-child(3) { animation-delay: 0.2s; }
+    .wave-bar:nth-child(4) { animation-delay: 0.4s; }
+    .wave-bar:nth-child(5) { animation-delay: 0.15s; }
+
+    @keyframes waveDance {
+      0% { height: 20%; }
+      100% { height: 100%; }
     }
 
     /* 3. कैलकुलेटर की टेक्स्ट डिस्प्ले */
@@ -63,7 +163,7 @@
       padding: 25px 15px;
       border: none;
       box-sizing: border-box;
-      z-index: 2;
+      z-index: 5;
       text-shadow: 2px 2px 4px #000;
     }
 
@@ -76,23 +176,27 @@
 
     button {
       padding: 15px;
-      font-size: 18px;
+      font-size: 16px;
       border: none;
       border-radius: 8px;
       background: #333;
       color: #fff;
       cursor: pointer;
+      font-weight: bold;
     }
 
     button.operator { background: #ff9500; }
     button.equal { background: #28a745; grid-column: span 2; }
     button.clear { background: #dc3545; grid-column: span 2; }
     
-    /* स्पेशल मीडिया/सॉन्ग बटन स्टाइल */
     button.media-btn {
       background: #9c27b0;
       color: #fff;
-      font-weight: bold;
+    }
+
+    button.audio-btn {
+      background: #e91e63;
+      color: #fff;
     }
   </style>
 </head>
@@ -100,10 +204,26 @@
 
   <div class="calculator-card">
     <div class="display-container">
-      <!-- वीडियो पीछे रहेगा -->
-      <video id="displayVideo" playsinline preload="auto">
+      <!-- वीडियो एलिमेंट -->
+      <video id="displayVideo" playsinline preload="auto" loop>
         <source id="videoSource" src="https://files.catbox.moe/2jojuh.mp4" type="video/mp4">
       </video>
+
+      <!-- एनीमेशन लेयर -->
+      <div id="audioAnimationLayer">
+        <div class="magic-sweep" id="magicSweep"></div>
+        <div class="glowing-love">💖</div>
+        <div class="sound-waves">
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+          <div class="wave-bar"></div>
+        </div>
+      </div>
+
+      <!-- ऑडियो एलिमेंट -->
+      <audio id="audioPlayer" preload="auto"></audio>
 
       <!-- नंबर ऊपर दिखेंगे -->
       <input type="text" id="display" readonly placeholder="0">
@@ -128,52 +248,111 @@
       <button onclick="appendValue('2')">2</button>
       <button onclick="appendValue('3')">3</button>
 
-      <button class="equal" onclick="calculateResult()">=</button>
+      <!-- क्रम: 0 -> brokrb -> 🎵 Song -> = -->
       <button onclick="appendValue('0')">0</button>
       <button class="media-btn" onclick="playNextVideo()">brokrb</button>
+      <button class="audio-btn" onclick="playAudioSong()">🎵 Song</button>
+      <button class="equal" onclick="calculateResult()">=</button>
     </div>
   </div>
 
   <script>
     let video = document.getElementById('displayVideo');
     let videoSource = document.getElementById('videoSource');
+    let audioPlayer = document.getElementById('audioPlayer');
+    let audioAnimLayer = document.getElementById('audioAnimationLayer');
+    let magicSweep = document.getElementById('magicSweep');
 
-    // वीडियो/सॉन्ग लिंक्स की लिस्ट
     let videoList = [
       "https://files.catbox.moe/2jojuh.mp4",
       "https://files.catbox.moe/y8j0j2.mp4"
     ];
 
+    let audioList = [
+      "https://files.catbox.moe/xzknp4.mp3",
+      "https://files.catbox.moe/689aqj.mp3"
+    ];
+
     let currentVideoIndex = 0;
+    let currentAudioIndex = 0;
+    let heartInterval = null;
 
     function appendValue(val) {
       document.getElementById('display').value += val;
     }
 
-    function clearDisplay() {
-      document.getElementById('display').value = '';
+    function stopAllMedia() {
       video.pause();
       video.currentTime = 0;
       video.style.display = 'none';
+
+      audioPlayer.pause();
+      audioPlayer.currentTime = 0;
+
+      audioAnimLayer.style.display = 'none';
+      clearInterval(heartInterval);
+      
+      // फ्लोटिंग पार्टिकल्स साफ़ करें
+      document.querySelectorAll('.floating-heart').forEach(h => h.remove());
+    }
+
+    function clearDisplay() {
+      document.getElementById('display').value = '';
+      stopAllMedia();
     }
 
     function playVideo() {
+      stopAllMedia();
+
       videoSource.src = videoList[currentVideoIndex];
       video.load();
 
       currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
-
       video.style.display = 'block';
-      video.currentTime = 0;
       
       let promise = video.play();
       if (promise !== undefined) {
         promise.catch(error => {
-          console.log("Autoplay error, switching to muted:", error);
           video.muted = true;
           video.play();
         });
       }
+    }
+
+    function triggerMagicSweep() {
+      magicSweep.classList.remove('magic-sweep-active');
+      void magicSweep.offsetWidth; // रिफ़्लो ट्रिगर
+      magicSweep.classList.add('magic-sweep-active');
+    }
+
+    function spawnFloatingHeart() {
+      let heart = document.createElement('div');
+      heart.className = 'floating-heart';
+      heart.innerText = Math.random() > 0.5 ? '💞' : '💖';
+      heart.style.left = (Math.random() * 40 + 5) + '%';
+      heart.style.animationDuration = (Math.random() * 1 + 1.5) + 's';
+      audioAnimLayer.appendChild(heart);
+
+      setTimeout(() => heart.remove(), 2000);
+    }
+
+    function playAudioSong() {
+      stopAllMedia();
+
+      audioPlayer.src = audioList[currentAudioIndex];
+      audioPlayer.load();
+
+      currentAudioIndex = (currentAudioIndex + 1) % audioList.length;
+
+      audioAnimLayer.style.display = 'block';
+      triggerMagicSweep();
+
+      // फ्लोटिंग लव जनरेट करें
+      heartInterval = setInterval(spawnFloatingHeart, 400);
+
+      audioPlayer.play().catch(error => {
+        console.log("Audio playback failed:", error);
+      });
     }
 
     function playNextVideo() {
@@ -192,8 +371,7 @@
         if (secretNumbers.includes(Number(result))) {
           playVideo();
         } else {
-          video.style.display = 'none';
-          video.pause();
+          stopAllMedia();
         }
 
       } catch (e) {
