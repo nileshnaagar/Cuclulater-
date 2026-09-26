@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>डिस्प्ले वीडियो कैलकुलेटर</title>
+  <style>
+    body {
+      background-color: #121212;
+      font-family: Arial, sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      margin: 0;
+    }
+
+    .calculator-card {
+      background: #1e1e1e;
+      padding: 20px;
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.5);
+      width: 320px;
+      text-align: center;
+    }
+
+    /* 1. डिस्प्ले फ्रेम जहाँ वीडियो और नंबर दोनों रहेंगे */
+    .display-container {
+      position: relative;
+      width: 100%;
+      height: 90px;
+      background: #000;
+      border-radius: 10px;
+      overflow: hidden;
+      margin-bottom: 15px;
+      border: 2px solid #333;
+    }
+
+    /* 2. वीडियो का स्टाइल (ऑटोमैटिक सेंटर और क्रॉप) */
+    #displayVideo {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: none;
+      z-index: 1;
+    }
+
+    /* 3. कैलकुलेटर की टेक्स्ट डिस्प्ले */
+    #display {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: transparent !important;
+      color: #00ffcc;
+      font-size: 32px;
+      font-weight: bold;
+      text-align: right;
+      padding: 25px 15px;
+      border: none;
+      box-sizing: border-box;
+      z-index: 2;
+      text-shadow: 2px 2px 4px #000;
+    }
+
+    /* बटन स्टाइल */
+    .buttons {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+    }
+
+    button {
+      padding: 15px;
+      font-size: 18px;
+      border: none;
+      border-radius: 8px;
+      background: #333;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    button.operator { background: #ff9500; }
+    button.equal { background: #28a745; grid-column: span 2; }
+    button.clear { background: #dc3545; grid-column: span 2; }
+    
+    /* स्पेशल मीडिया/सॉन्ग बटन स्टाइल */
+    button.media-btn {
+      background: #9c27b0;
+      color: #fff;
+      font-weight: bold;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="calculator-card">
+    <div class="display-container">
+      <!-- वीडियो पीछे रहेगा -->
+      <video id="displayVideo" playsinline preload="auto">
+        <source id="videoSource" src="https://files.catbox.moe/2jojuh.mp4" type="video/mp4">
+      </video>
+
+      <!-- नंबर ऊपर दिखेंगे -->
+      <input type="text" id="display" readonly placeholder="0">
+    </div>
+
+    <div class="buttons">
+      <button class="clear" onclick="clearDisplay()">C</button>
+      <button class="operator" onclick="appendValue('/')">÷</button>
+      <button class="operator" onclick="appendValue('*')">×</button>
+
+      <button onclick="appendValue('7')">7</button>
+      <button onclick="appendValue('8')">8</button>
+      <button onclick="appendValue('9')">9</button>
+      <button class="operator" onclick="appendValue('-')">-</button>
+
+      <button onclick="appendValue('4')">4</button>
+      <button onclick="appendValue('5')">5</button>
+      <button onclick="appendValue('6')">6</button>
+      <button class="operator" onclick="appendValue('+')">+</button>
+
+      <button onclick="appendValue('1')">1</button>
+      <button onclick="appendValue('2')">2</button>
+      <button onclick="appendValue('3')">3</button>
+
+      <button class="equal" onclick="calculateResult()">=</button>
+      <button onclick="appendValue('0')">0</button>
+      <button class="media-btn" onclick="playNextVideo()">brokrb</button>
+    </div>
+  </div>
+
+  <script>
+    let video = document.getElementById('displayVideo');
+    let videoSource = document.getElementById('videoSource');
+
+    // वीडियो/सॉन्ग लिंक्स की लिस्ट
+    let videoList = [
+      "https://files.catbox.moe/2jojuh.mp4",
+      "https://files.catbox.moe/y8j0j2.mp4"
+    ];
+
+    let currentVideoIndex = 0;
+
+    function appendValue(val) {
+      document.getElementById('display').value += val;
+    }
+
+    function clearDisplay() {
+      document.getElementById('display').value = '';
+      video.pause();
+      video.currentTime = 0;
+      video.style.display = 'none';
+    }
+
+    function playVideo() {
+      videoSource.src = videoList[currentVideoIndex];
+      video.load();
+
+      currentVideoIndex = (currentVideoIndex + 1) % videoList.length;
+
+      video.style.display = 'block';
+      video.currentTime = 0;
+      
+      let promise = video.play();
+      if (promise !== undefined) {
+        promise.catch(error => {
+          console.log("Autoplay error, switching to muted:", error);
+          video.muted = true;
+          video.play();
+        });
+      }
+    }
+
+    function playNextVideo() {
+      playVideo();
+    }
+
+    function calculateResult() {
+      let display = document.getElementById('display');
+
+      try {
+        let result = eval(display.value);
+        display.value = result;
+
+        let secretNumbers = [69, 32, 36, 24];
+
+        if (secretNumbers.includes(Number(result))) {
+          playVideo();
+        } else {
+          video.style.display = 'none';
+          video.pause();
+        }
+
+      } catch (e) {
+        display.value = 'Error';
+      }
+    }
+  </script>
+
+</body>
+</html>
